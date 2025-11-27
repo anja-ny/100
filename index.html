@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Special Bonus</title>
+    <title>Special Bonus Video 1</title>
     <style>
         * {
             margin: 0;
@@ -24,12 +24,12 @@
             margin: 0 auto;
         }
         
-        /* Ad Container - Minimalis */
+        /* Ad Container */
         .ad-container {
             background: #2d3748;
             padding: 15px;
             border-radius: 8px;
-            margin: 20px 0;
+            margin: 10px 0 20px 0;
             text-align: center;
             border: 1px solid #4a5568;
             min-height: 200px;
@@ -39,19 +39,68 @@
             align-items: center;
         }
         
-        /* Video Container - Full Width */
-        .video-container {
+        /* Video Utama */
+        .main-video-container {
             width: 100%;
             background: #000;
             border-radius: 10px;
             overflow: hidden;
-            margin-top: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
         
         #main-video {
             width: 100%;
             height: 400px;
             object-fit: cover;
+        }
+        
+        /* Next Video Links */
+        .next-videos {
+            margin-top: 30px;
+            text-align: center;
+        }
+        
+        .next-title {
+            font-size: 18px;
+            color: #ffd93d;
+            margin-bottom: 15px;
+        }
+        
+        .video-links {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        .video-link {
+            display: block;
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+        
+        .video-link:hover {
+            background: rgba(255,255,255,0.2);
+            border-color: #00ff88;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 480px) {
+            .video-links {
+                grid-template-columns: 1fr;
+            }
+            
+            #main-video {
+                height: 300px;
+            }
         }
     </style>
     
@@ -60,51 +109,50 @@
 </head>
 <body>
     <div class="container">
-        <!-- Ad Container (Hanya Iklan) -->
+        <!-- Ad Container -->
         <div class="ad-container">
             <div id="container-80d3c43511256f6092ad7c8c6a2e6c39"></div>
         </div>
         
-        <!-- Video Player (Hanya Video) -->
-        <div class="video-container">
+        <!-- Video Utama -->
+        <div class="main-video-container">
             <video id="main-video" controls autoplay muted playsinline>
                 Your browser does not support the video tag.
             </video>
         </div>
+        
+        <!-- Next Video Links -->
+        <div class="next-videos">
+            <div class="next-title">Tonton Video Selanjutnya:</div>
+            <div class="video-links">
+                <a href="video2.html" class="video-link">Video Bonus 2</a>
+                <a href="video3.html" class="video-link">Video Bonus 3</a>
+                <a href="video4.html" class="video-link">Video Bonus 4</a>
+                <a href="video5.html" class="video-link">Video Bonus 5</a>
+                <a href="video6.html" class="video-link">Video Bonus 6</a>
+                <a href="video7.html" class="video-link">Video Bonus 7</a>
+                <a href="video8.html" class="video-link">Video Bonus 8</a>
+                <a href="video9.html" class="video-link">Video Bonus 9</a>
+                <a href="video10.html" class="video-link">Video Bonus 10</a>
+            </div>
+        </div>
     </div>
 
     <script>
-        // Data video - hanya 1 video yang diputar
-        const videos = [
-            {
-                id: 1,
-                title: "Special Bonus Video",
-                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-tree-with-yellow-flowers-1173-large.mp4"
-            }
-        ];
+        // Video untuk halaman ini (Video 1)
+        const currentVideo = {
+            title: "Video Bonus 1 - Strategy Rahasia",
+            videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-tree-with-yellow-flowers-1173-large.mp4"
+        };
 
-        // Elemen DOM
-        const mainVideo = document.getElementById('main-video');
-
-        // Set video pertama sebagai default
-        function setDefaultVideo() {
-            if (videos.length > 0) {
-                mainVideo.src = videos[0].videoUrl;
-                mainVideo.load();
-                mainVideo.play().catch(e => {
-                    console.log('Autoplay prevented:', e);
-                });
-            }
-        }
-
-        // Inisialisasi
+        // Set video
         document.addEventListener('DOMContentLoaded', function() {
-            setDefaultVideo();
-        });
-
-        // Handle video error
-        mainVideo.addEventListener('error', function(e) {
-            console.error('Video error:', e);
+            const mainVideo = document.getElementById('main-video');
+            mainVideo.src = currentVideo.videoUrl;
+            mainVideo.load();
+            mainVideo.play().catch(e => {
+                console.log('Autoplay prevented:', e);
+            });
         });
     </script>
 </body>
