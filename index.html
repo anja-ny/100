@@ -24,7 +24,6 @@
             margin: 0 auto;
         }
         
-        /* Ad Container */
         .ad-container {
             background: #2d3748;
             padding: 15px;
@@ -39,7 +38,6 @@
             align-items: center;
         }
         
-        /* Video Utama */
         .main-video-container {
             width: 100%;
             background: #000;
@@ -48,6 +46,11 @@
             margin-bottom: 30px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.3);
             position: relative;
+        }
+        
+        .video-wrapper {
+            position: relative;
+            width: 100%;
             padding-top: 56.25%; /* 16:9 Aspect Ratio */
         }
         
@@ -60,7 +63,39 @@
             border: none;
         }
         
-        /* Next Video Links */
+        .video-fallback {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #1a1a1a;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .video-fallback button {
+            background: #00ff88;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .video-fallback button:hover {
+            background: #00cc6a;
+            transform: translateY(-2px);
+        }
+        
         .next-videos {
             margin-top: 30px;
             text-align: center;
@@ -98,15 +133,22 @@
             transform: translateY(-2px);
         }
         
+        .error-message {
+            color: #ff6b6b;
+            text-align: center;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255,107,107,0.1);
+            border-radius: 6px;
+            display: none;
+        }
+        
         @media (max-width: 480px) {
             .video-links {
                 grid-template-columns: 1fr;
             }
         }
     </style>
-    
-    <!-- Adstera Script -->
-    <script async="async" data-cfasync="false" src="//pl28146195.effectivegatecpm.com/80d3c43511256f6092ad7c8c6a2e6c39/invoke.js"></script>
 </head>
 <body>
     <div class="container">
@@ -117,15 +159,29 @@
         
         <!-- Video Utama -->
         <div class="main-video-container">
-            <!-- Kode embed dari Videy.co -->
-            <iframe 
-                class="video-embed"
-                src="https://videy.co/embed/q3S5i30J1" 
-                frameborder="0" 
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-                allowfullscreen>
-            </iframe>
+            <div class="video-wrapper">
+                <!-- Kode embed dari Videy.co dengan fallback -->
+                <iframe 
+                    class="video-embed"
+                    id="videy-embed"
+                    src="https://videy.co/embed/q3S5i30J1?autoplay=1&muted=1" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+                
+                <!-- Fallback jika embed tidak bekerja -->
+                <div class="video-fallback" id="video-fallback">
+                    <h3>Video Tidak Dapat Diputar</h3>
+                    <p>Silakan coba salah satu solusi berikut:</p>
+                    <button onclick="reloadVideo()">Coba Muat Ulang Video</button>
+                    <button onclick="openDirectLink()">Buka Link Langsung</button>
+                </div>
+            </div>
         </div>
+        
+        <div class="error-message" id="error-message"></div>
         
         <!-- Next Video Links -->
         <div class="next-videos">
@@ -143,5 +199,82 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Cek apakah video bisa dimuat
+        document.addEventListener('DOMContentLoaded', function() {
+            const iframe = document.getElementById('videy-embed');
+            const fallback = document.getElementById('video-fallback');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Sembunyikan fallback awalnya
+            fallback.style.display = 'none';
+            
+            // Cek status video setelah beberapa detik
+            setTimeout(function() {
+                checkVideoStatus();
+            }, 3000);
+            
+            // Event listener untuk error
+            iframe.addEventListener('error', function() {
+                showFallback('Embed video tidak dapat dimuat. Silakan coba alternatif lain.');
+            });
+            
+            // Cek jika iframe tidak terload dengan baik
+            iframe.addEventListener('load', function() {
+                // Jika iframe terload tapi mungkin masih ada masalah
+                setTimeout(checkVideoStatus, 2000);
+            });
+        });
+        
+        function checkVideoStatus() {
+            const iframe = document.getElementById('videy-embed');
+            const fallback = document.getElementById('video-fallback');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Cek jika iframe memiliki konten yang valid
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                if (iframeDoc && iframeDoc.body && iframeDoc.body.innerHTML.includes('error')) {
+                    showFallback('Video tidak tersedia atau terjadi error.');
+                }
+            } catch (e) {
+                // Cross-origin error, kita tidak bisa akses konten iframe
+                // Tapi ini normal untuk embed dari domain lain
+                console.log('Cannot access iframe content (normal for cross-origin)');
+            }
+        }
+        
+        function showFallback(message) {
+            const iframe = document.getElementById('videy-embed');
+            const fallback = document.getElementById('video-fallback');
+            const errorMessage = document.getElementById('error-message');
+            
+            iframe.style.display = 'none';
+            fallback.style.display = 'flex';
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+        
+        function reloadVideo() {
+            const iframe = document.getElementById('videy-embed');
+            const fallback = document.getElementById('video-fallback');
+            const errorMessage = document.getElementById('error-message');
+            
+            // Reload iframe
+            iframe.src = iframe.src;
+            iframe.style.display = 'block';
+            fallback.style.display = 'none';
+            errorMessage.style.display = 'none';
+        }
+        
+        function openDirectLink() {
+            // Buka link langsung ke Videy.co
+            window.open('https://videy.co/v/?id=q3S5i30J1&utm_source=copy&utm_medium=organic', '_blank');
+        }
+    </script>
+    
+    <!-- Adstera Script -->
+    <script async="async" data-cfasync="false" src="//pl28146195.effectivegatecpm.com/80d3c43511256f6092ad7c8c6a2e6c39/invoke.js"></script>
 </body>
 </html>
